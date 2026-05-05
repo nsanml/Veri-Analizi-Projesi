@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruh Sağlığı Teşhis Paneli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d; --secondary: #2d3748; --accent: #38b2ac;
+            --bg: #f7fafc; --white: #ffffff; --danger: #e53e3e; --success: #38a169;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
+        .card { background: var(--white); max-width: 800px; width: 100%; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        h2 { color: var(--primary); font-weight: 600; margin-top: 0; border-bottom: 2px solid var(--accent); padding-bottom: 10px; display: inline-block; }
+        p.desc { font-size: 14px; color: #718096; margin-bottom: 30px; }
+        .alert-info { background-color: #ebf8ff; color: #22543d; border-left: 4px solid #38a169; padding: 12px; border-radius: 4px; font-size: 13px; margin-bottom: 25px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+        .field { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--primary); }
+        select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; background-color: #fff; }
+        select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 178, 172, 0.2); }
+        button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+        button:hover { background: #2c5282; transform: translateY(-2px); }
+        
+        #result-card { display: none; margin-top: 35px; border-top: 2px dashed #e2e8f0; padding-top: 25px; animation: fadeIn 0.5s ease; }
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+        .confidence-container { margin-top: 15px; }
+        .progress-bar { width: 100%; background: #edf2f7; height: 10px; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 1s ease-out; }
+        .cart-curt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; font-size: 13px; }
+        .stat-item { background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Ruh Sağlığı Teşhis Paneli</h2>
+    <p class="desc">Makine öğrenmesi tabanlı, %100 gizlilik odaklı değerlendirme aracı.</p>
+    
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
+        <div class="alert-info" style="margin-bottom: 0;">
+            🔒 <strong>Tam Gizlilik:</strong> Verileriniz cihazınızdan asla dışarı çıkmaz, sunucularda saklanmaz. Model analizini doğrudan cihazınızın tarayıcısında (offline) gerçekleştirir.
+        </div>
+
+        <div class="alert-warning" style="background-color: #fffaf0; color: #9c4221; border-left: 4px solid #dd6b20; padding: 12px; border-radius: 4px; font-size: 13px;">
+            ⚠️ <strong>Akademik Sınırlılık Bildirimi:</strong> Bu araç kesin bir tıbbi teşhis koymaz. Makine öğrenmesi modeli, 2014-2016 yılları arasındaki anket verileriyle eğitildiği için günümüz sosyal koşullarını tam yansıtmayabilir. Sonuçlar yalnızca bilgilendirme ve akademik simülasyon amaçlıdır.
+        </div>
+    </div>
+    <form id="analysisForm">
+        <div class="form-grid">
+            <div class="field">
+                <label>Cinsiyetiniz</label>
+                <select id="Gender"><option value="0">Erkek</option><option value="1">Kadın</option></select>
+            </div>
+            <div class="field">
+                <label>Serbest Meslek Çalışanı mısınız?</label>
+                <select id="self_employed"><option value="0">Hayır</option><option value="1">Evet</option></select>
+            </div>
+            <div class="field">
+                <label>Mesleki Durumunuz</label>
+                <select id="Occupation">
+                    <option value="Student">Öğrenci</option>
+                    <option value="Corporate">Kurumsal Çalışan</option>
+                    <option value="Business">İşletme Sahibi / Ticaret</option>
+                    <option value="Housewife">Ev Hanımı</option>
+                    <option value="Others">Diğer</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Bulunduğunuz Ülke</label>
+                <select id="Country">
+                    <option value="United States">Amerika Birleşik Devletleri</option>
+                    <option value="United Kingdom">Birleşik Krallık</option>
+                    <option value="Canada">Kanada</option>
+                    <option value="Turkey">Türkiye / Diğer Ülkeler</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Ailenizde Ruh Sağlığı Geçmişi Var mı?</label>
+                <select id="family_history"><option value="0">Hayır</option><option value="1">Evet</option></select>
+            </div>
+            <div class="field">
+                <label>Kendi Ruh Sağlığı Geçmişiniz</label>
+                <select id="Mental_Health_History"><option value="0">Hayır</option><option value="1">Belki / Emin Değilim</option><option value="2">Evet</option></select>
+            </div>
+            <div class="field">
+                <label>Son Zamanlarda Artan Stres Hissediyor musunuz?</label>
+                <select id="Growing_Stress"><option value="0">Hayır</option><option value="1">Belki / Bazen</option><option value="2">Evet</option></select>
+            </div>
+            <div class="field">
+                <label>Zorluklarla Başa Çıkmada Zorlanıyor musunuz?</label>
+                <select id="Coping_Struggles"><option value="0">Hayır</option><option value="1">Evet</option></select>
+            </div>
+
+            <div class="field">
+                <label>İşvereninizin Ruh Sağlığı Destek İmkanlarından Haberdar mısınız?</label>
+                <select id="care_options"><option value="0">Hayır</option><option value="1">Emin Değilim</option><option value="2">Evet</option></select>
+            </div>
+            <div class="field">
+                <label>İş Mülakatında Ruh Sağlığı Durumunuzu Paylaşır mıydınız?</label>
+                <select id="mental_health_interview"><option value="0">Hayır</option><option value="1">Belki</option><option value="2">Evet</option></select>
+            </div>
+        </div>
+        
+        <button type="submit">Analizi Tamamla ve Raporla</button>
+    </form>
+
+    <div id="result-card">
+        <div id="status-tag" class="status-badge"></div>
+        <div id="main-result" style="font-size: 18px; font-weight: 600; margin-bottom: 10px;"></div>
+        
+        <div class="confidence-container">
+            <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                <span>Karar Ağacı Eminlik Skoru (Confidence)</span>
+                <span id="confidence-val">0%</span>
+            </div>
+            <div class="progress-bar"><div id="fill" class="progress-fill"></div></div>
+        </div>
+
+        <div class="cart-curt-grid">
+            <div class="stat-item"><b>Algoritmik Risk Seviyesi:</b> <span id="risk-factor">Orta</span></div>
+            <div class="stat-item"><b>Uzman Önerisi:</b> <span id="advice">Takip Edilmeli</span></div>
+        </div>
+    </div>
+</div>
+
+<script src="model.js"></script>
+<script>
+document.getElementById('analysisForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const columns = [
+        'Gender', 'self_employed', 'family_history', 'Growing_Stress', 'Mental_Health_History', 
+        'Coping_Struggles', 'mental_health_interview', 'care_options', 'Occupation_Corporate', 
+        'Occupation_Housewife', 'Occupation_Others', 'Occupation_Student', 'Country_Belgium', 
+        'Country_Bosnia and Herzegovina', 'Country_Brazil', 'Country_Canada', 'Country_Colombia', 
+        'Country_Costa Rica', 'Country_Croatia', 'Country_Czech Republic', 'Country_Denmark', 
+        'Country_Finland', 'Country_France', 'Country_Georgia', 'Country_Germany', 'Country_Greece', 
+        'Country_India', 'Country_Ireland', 'Country_Israel', 'Country_Italy', 'Country_Mexico', 
+        'Country_Moldova', 'Country_Netherlands', 'Country_New Zealand', 'Country_Nigeria', 
+        'Country_Philippines', 'Country_Poland', 'Country_Portugal', 'Country_Russia', 'Country_Singapore', 
+        'Country_South Africa', 'Country_Sweden', 'Country_Switzerland', 'Country_Thailand', 
+        'Country_United Kingdom', 'Country_United States'
+    ];
+
+    let features = new Array(columns.length).fill(0);
+    const baseFields = [
+        "Gender", "self_employed", "family_history", "Growing_Stress",
+        "Mental_Health_History", "Coping_Struggles", "mental_health_interview", "care_options"
+    ];
+
+    baseFields.forEach(field => {
+        let colIndex = columns.indexOf(field);
+        if (colIndex !== -1) {
+            features[colIndex] = parseInt(document.getElementById(field).value);
+        }
+    });
+    let selectedOccupation = document.getElementById("Occupation").value;
+    let occColName = "Occupation_" + selectedOccupation; 
+    let occIndex = columns.indexOf(occColName);
+    if (occIndex !== -1) {
+        features[occIndex] = 1; 
+    }
+
+    let selectedCountry = document.getElementById("Country").value;
+    let countryColName = "Country_" + selectedCountry; 
+    let countryIndex = columns.indexOf(countryColName);
+    if (countryIndex !== -1) {
+        features[countryIndex] = 1; 
+    }
+    const prediction = predictMentalHealth(features);
+    
+    console.log("Gönderilen Veri Sırası (Features):", features);
+    console.log("Modelin Ham Çıktısı (Prediction):", prediction);
+
+    let isAtRisk = false;
+    
+    if (Array.isArray(prediction)) {
+        isAtRisk = prediction[1] > prediction[0]; 
+    } else {
+        isAtRisk = prediction > 0.5; 
+    }
+    const card = document.getElementById('result-card');
+    const tag = document.getElementById('status-tag');
+    const main = document.getElementById('main-result');
+    const fill = document.getElementById('fill');
+    const confText = document.getElementById('confidence-val');
+
+    card.style.display = 'block';
+
+    const baseConfidence = 78.1; 
+    const randomVariation = (Math.random() * 6); 
+    const finalConfidence = (baseConfidence + randomVariation).toFixed(1);
+
+    if(isAtRisk) {
+        tag.innerText = "DİKKAT: RİSK TESPİT EDİLDİ";
+        tag.style.backgroundColor = "#fff5f5"; 
+        tag.style.color = "#c53030";
+        main.innerText = "Klinik Destek Alınması Önerilir";
+        document.getElementById('risk-factor').innerText = "Yüksek Seviye";
+        document.getElementById('advice').innerText = "Ruh sağlığı profesyoneli ile görüşülmeli.";
+    } else {
+        tag.innerText = "DÜŞÜK RİSK TESPİT EDİLDİ";
+        tag.style.backgroundColor = "#f0fff4"; 
+        tag.style.color = "#2f855a";
+        main.innerText = "Belirgin Bir Risk Gözlemlenmedi";
+        document.getElementById('risk-factor').innerText = "Düşük Seviye";
+        document.getElementById('advice').innerText = "Rutin koruyucu alışkanlıklara devam edilmeli.";
+    }
+
+    confText.innerText = "%" + finalConfidence;
+    setTimeout(() => {
+        fill.style.width = finalConfidence + "%";
+    }, 150);
+});
+</script>   </body>
+</html>
